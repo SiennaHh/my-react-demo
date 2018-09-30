@@ -1,0 +1,15 @@
+.head-er{
+    width: 100%;
+    height: 50px;
+    border: 1px solid #dae2ed;
+    background-color: #f3f6fb;
+}
+.title{
+    display: inline-block;
+    /*margin-left: 100px;*/
+    font-size: 20px;
+    color: #666;
+}
+.login-block{
+    /*display: inline-block;*/
+}
