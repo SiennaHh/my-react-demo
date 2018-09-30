@@ -17,7 +17,9 @@ class Register extends Component {
         typeValue: 2,
         validUserName: true,
         validPassTip: false,
-        countryData: []
+        countryData: [],
+        canSend: true,
+        noPhone: false,
     };
     componentDidMount(){
 
@@ -69,6 +71,16 @@ class Register extends Component {
         )
         console.log(this.state.validPassTip)
     }
+    //手机号验证
+    validatePhone = (rule, value, callback) => {
+        const reg = /^\d{4,11}$/
+        if(value && !reg.test(value)){
+            callback('手机号格式不正确！')
+        }else if(this.state.noPhone){
+            callback('请输入手机号')
+        }
+        callback()
+    }
 
     //用户名验证
     validUserName = (rule, value, callback) => {
@@ -99,38 +111,46 @@ class Register extends Component {
     //发送验证码
     sendCapt = (hh) => {
         const form = this.props.form;
-
-        let param = {
-            mobilePhone: form.getFieldValue('phone')
-        }
-        verifyPhoneNum(param).then(res => {
-            console.log(res)
-            if(res.code === "0"){
-                let code = {
-                    codeType: 1,
-                    mobilePhone: '+' + form.getFieldValue('prefix') + '-' + form.getFieldValue('phone'),
-                    title: 'Registration of ca-b2b',
-                    token: this.GenNonDuplicateID()
-                }
-                sendPhoneCaptcha(code).then(res => {
-                    if(res.code === "0"){
-                        message.success("验证码发送成功！");
-                    }else {
-                        message.error(res.msg);
+        if(form.getFieldValue('phone') === undefined){
+            this.setState({
+                noPhone: true
+            })
+        }else {
+            let param = {
+                mobilePhone: form.getFieldValue('phone')
+            };
+            verifyPhoneNum(param).then(res => {
+                console.log(res)
+                if(res.code === "0"){
+                    let code = {
+                        codeType: 1,
+                        mobilePhone: '+' + form.getFieldValue('prefix') + '-' + form.getFieldValue('phone'),
+                        title: 'Registration of ca-b2b',
+                        token: this.GenNonDuplicateID()
                     }
-                })
-            }else {
-                message.error(res.msg);
-            }
-        })
+                    sendPhoneCaptcha(code).then(res => {
+                        if(res.code === "0"){
+                            message.success("验证码发送成功！");
+                            this.setState({
+                                canSend: false
+                            })
+                        }else {
+                            message.error(res.msg);
+                        }
+                    })
+                }else {
+                    message.error(res.msg);
+                }
+            })
+        }
+
+
     }
 
 
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { autoCompleteResult } = this.state;
-
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -157,9 +177,9 @@ class Register extends Component {
             initialValue: '86',
         })(
             <Select style={{ width: 150 }}
-                showSearch
-                optionFilterProp="children"
-                filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                    showSearch
+                    optionFilterProp="children"
+                    filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
             >
                 {this.state.countryData.map((coun,i) => {
                     return <Option key={i} value={coun.countryPhoneCode}>{coun.code}+{coun.countryPhoneCode}</Option>
@@ -191,6 +211,7 @@ class Register extends Component {
                             }, {
                                 validator: this.validUserName,
                             }],
+                            validateTrigger: 'onBlur'
                         })(
                             <div>
                                 <Input />
@@ -235,7 +256,10 @@ class Register extends Component {
                     </FormItem>
                     <FormItem{...formItemLayout} label="Phone Number">
                         {getFieldDecorator('phone', {
-                            rules: [{ required: true, message: 'Please input your phone number!' }],
+                            rules: [{ required: true, message: 'Please input your phone number!' },
+                                {
+                                    validator: this.validatePhone,
+                                }],
                         })(
                             <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
                         )}
@@ -250,7 +274,13 @@ class Register extends Component {
                                 )}
                             </Col>
                             <Col span={8}>
-                                <Button onClick={this.sendCapt}>发送验证码</Button>
+                                {this.state.canSend ? <div className="sendCode-btn" onClick={this.sendCapt}>
+                                    <span>发送验证码</span>
+                                </div> : <div className="nosendCode-btn">
+                                    <span>s后重新发送</span>
+                                </div>
+                                }
+
                             </Col>
                         </Row>
                     </FormItem>
