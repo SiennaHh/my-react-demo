@@ -1,0 +1,19 @@
+.regis-block{
+    width: 40%;
+    margin: 0 auto;
+}
+.sendCode-btn{
+    display: inline-block;
+    border: 1px solid #d9d9d9;
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+}
+.nosendCode-btn{
+    display: inline-block;
+    border: 1px solid #d9d9d9;
+    width: 200px;
+    text-align: center;
+    background-color: #7ac23c;
+    color: white;
+}

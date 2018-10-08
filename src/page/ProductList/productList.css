@@ -1,0 +1,44 @@
+.product-list-main{
+    width: 100%;
+}
+.table{
+    border: 1px solid #dae2ed;
+}
+.add-btn{
+    margin: 10px 0;
+}
+.form-main{
+    width: 50%;
+    margin: 0 auto;
+}
+.form-main .ant-form-item-label.ant-col-sm-8{
+    /*width: 20%;*/
+}
+.role-block{
+    width: 200px;
+    height: 160px;
+    float: left;
+    padding: 10px;
+    margin-right: 21px;
+    background-color: #f4f4f4;
+    border: 1px solid #dae2ed;
+}
+.role-block p{
+    line-height: 20px;
+}
+.role-ul{
+    padding: 0;
+}
+.role-ul li{
+    list-style: none;
+    line-height: 20px;
+
+}
+.role-ul li:before{
+    content: '·';
+    color: #f55118;
+    margin-right: 5px;
+}
+.goodsImg{
+    max-width: 50px;
+}
