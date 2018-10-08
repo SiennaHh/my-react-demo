@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import {verifyPhoneNum, getAreaAndCode, sendPhoneCaptcha} from '../../api/service'
 import './register.css'
 import { Form, Input,   Select, Row, Col, Checkbox, Button,  Radio, message} from 'antd';
