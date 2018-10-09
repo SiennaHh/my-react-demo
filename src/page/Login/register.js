@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
-import {verifyPhoneNum, getAreaAndCode, sendPhoneCaptcha} from '../../api/service'
+import {verifyPhoneNum,
+getAreaAndCode,
+sendPhoneCaptcha,
+register} from '../../api/service'
 import './register.css'
 import { Form, Input,   Select, Row, Col, Checkbox, Button,  Radio, message} from 'antd';
 const FormItem = Form.Item;
@@ -20,20 +23,43 @@ class Register extends Component {
         canSend: true,
         count: 60,
         sendText: '发送验证码',
+        token: '',
+        otherForm: {
+            codeType: '1',
+            langType: '1',
+            token: ''
+        }
     };
     componentDidMount(){
-
         getAreaAndCode().then(res => {
             const countryData = res.data
             this.setState({countryData: countryData});
         })
     }
-
-    handleSubmit = (e) => {
+//提交注册信息
+    submitRegisterInfo = (e) => {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                console.log(values);
+                let otherForm = {
+                    codeType: '1',
+                    langType: '1',
+                    token: this.state.token
+                }
+                let finalForm = Object.assign(values,otherForm)
+                delete finalForm.confirm;
+                delete finalForm.agree;
+                console.log(finalForm)
+                register(finalForm).then(res => {
+                    if(res.code === "0"){
+                        message.success("注册成功")
+                    }else {
+                        message.success(res.msg);
+                    }
+                }).catch(err => {
+                    message.error(err.msg);
+                })
             }
         });
     }
@@ -45,7 +71,7 @@ class Register extends Component {
     //确认密码
     compareToFirstPassword = (rule, value, callback) => {
         const form = this.props.form;
-        if (value && value !== form.getFieldValue('password')) {
+        if (value && value !== form.getFieldValue('passWord')) {
             callback('Two passwords that you enter is inconsistent!');
         } else {
             callback();
@@ -65,6 +91,8 @@ class Register extends Component {
             form.validateFields(['confirm'], { force: true });
         }else if(value && !reg.test(value)){
             callback('密码格式不正确！')
+        }else if(value && value === form.getFieldValue('userName')){
+            callback('密码不能与用户名一致')
         }
         callback();
     }
@@ -105,6 +133,7 @@ class Register extends Component {
     }
 
     GenNonDuplicateID = (randomLength) => {
+        randomLength = 10;
         return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
     }
 
@@ -112,23 +141,27 @@ class Register extends Component {
     //发送验证码
     sendCapt = (hh) => {
         const form = this.props.form;
-        if(form.getFieldValue('phone') === undefined){
+        if(form.getFieldValue('mobilePhone') === undefined){
             message.error('请先输入手机号！')
             return;
         }
         let param = {
-            mobilePhone: form.getFieldValue('phone')
+            mobilePhone: form.getFieldValue('mobilePhone')
         };
         verifyPhoneNum(param).then(res => {
                 console.log(res)
                 if(res.code === "0"){
                     let code = {
                         codeType: 1,
-                        mobilePhone: '+' + form.getFieldValue('prefix') + '-' + form.getFieldValue('phone'),
+                        mobilePhone: form.getFieldValue('mobileCountryCode') + form.getFieldValue('mobilePhone'),
                         title: 'Registration of ca-b2b',
                         token: this.GenNonDuplicateID()
                     }
                     sendPhoneCaptcha(code).then(res => {
+                        this.setState({
+                            token: code.token
+                        })
+
                         if(res.code === "0"){
                             message.success("验证码发送成功！");
                             this.setState({
@@ -190,8 +223,8 @@ class Register extends Component {
                 },
             },
         };
-        const prefixSelector = getFieldDecorator('prefix', {
-            initialValue: '86',
+        const prefixSelector = getFieldDecorator('mobileCountryCode', {
+            initialValue: '+86-',
         })(
             <Select style={{ width: 150 }}
                 showSearch
@@ -199,7 +232,7 @@ class Register extends Component {
                 filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
             >
                 {this.state.countryData.map((coun,i) => {
-                    return <Option key={i} value={coun.countryPhoneCode}>{coun.code}+{coun.countryPhoneCode}</Option>
+                    return <Option key={i} value={'+' + coun.countryPhoneCode + '-'}>{coun.code}+{coun.countryPhoneCode}</Option>
                 })}
             </Select>
         );
@@ -207,7 +240,7 @@ class Register extends Component {
 
         return (
             <div className="regis-block">
-                <Form onSubmit={this.handleSubmit}>
+                <Form onSubmit={this.submitRegisterInfo}>
                     <FormItem{...formItemLayout} label="用户类型">
                         {getFieldDecorator('userType', {
                             initialValue: 1,
@@ -222,7 +255,7 @@ class Register extends Component {
                         )}
                     </FormItem>
                     <FormItem{...formItemLayout} label="用户名">
-                        {getFieldDecorator('userName ', {
+                        {getFieldDecorator('userName', {
                             rules: [ {
                                 required: true, message: '用户名不能为空！',
                             }, {
@@ -249,8 +282,8 @@ class Register extends Component {
                     </FormItem>
 
                     <FormItem{...formItemLayout} label="国家">
-                        {getFieldDecorator('country', {
-                            initialValue: '中国',
+                        {getFieldDecorator('regCountry', {
+                            // initialValue: '中国',
                             rules: [ {
                                 required: true, message: '请选择国家',
                             }],
@@ -272,7 +305,7 @@ class Register extends Component {
                         )}
                     </FormItem>
                     <FormItem{...formItemLayout} label="Phone Number">
-                        {getFieldDecorator('phone', {
+                        {getFieldDecorator('mobilePhone', {
                             rules: [{ required: true, message: 'Please input your phone number!' },
                                 {
                                     validator: this.validatePhone,
@@ -288,7 +321,7 @@ class Register extends Component {
                                 {getFieldDecorator('captcha', {
                                     rules: [{ required: true, message: 'Please input the captcha you got!' }],
                                 })(
-                                    <Input />
+                                    <Input maxLength="6"/>
                                 )}
                             </Col>
                             <Col span={8}>
@@ -304,7 +337,7 @@ class Register extends Component {
                     </FormItem>
 
                     <FormItem{...formItemLayout} label="Password">
-                        {getFieldDecorator('password', {
+                        {getFieldDecorator('passWord', {
                             rules: [{
                                 required: true, message: 'Please input your password!',
                             }, {
@@ -331,8 +364,11 @@ class Register extends Component {
                         )}
                     </FormItem>
                     <FormItem {...tailFormItemLayout}>
-                        {getFieldDecorator('agreement', {
-                            valuePropName: 'checked',
+                        {getFieldDecorator('agree', {
+                            // valuePropName: 'checked',
+                            rules: [{
+                                required: true, message: '请先勾选同意协议！'
+                            }]
                         })(
                             <Checkbox>I have read the <a href="">agreement</a></Checkbox>
                         )}

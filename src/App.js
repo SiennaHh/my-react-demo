@@ -13,11 +13,9 @@ class App extends Component {
       <div className="App">
         <div className="app-head">
           <Header/>
-            <div className="middle">
               <div className="main">
                   {this.props.children}
               </div>
-            </div>
           <Footer/>
         </div>
       </div>

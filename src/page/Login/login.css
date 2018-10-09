@@ -1,0 +1,19 @@
+.loginContainer{
+    background-color: #f2f2f2;
+    padding: 200px 0;
+}
+.login-form {
+    max-width: 330px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 15px;
+}
+.login-form-forgot {
+    float: right;
+}
+.login-form-button {
+    width: 100%;
+}
+.login-form .ant-form-item-label{
+    text-align: left;
+}

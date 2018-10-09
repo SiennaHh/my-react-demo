@@ -14,7 +14,7 @@ import EditProduct from './../page/ProductList/editProduct'
 
 
 const pageRouter = () => (
-    <div>
+    <div className="page-main">
         <div className="app-nav">
             <Nav/>
         </div>
