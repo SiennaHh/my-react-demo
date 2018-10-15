@@ -15,20 +15,12 @@ class Header extends Component {
                     <Col span={6}>
                         <div className="login-block">
                             <span>
-                                <Link to="/Login">
-                                    登录
-                                </Link>
-                                <span> | </span>
-                                <Link to="/register">
-                                    注册
-                                </Link>
+
                             </span>
                             {/*<span>1</span>*/}
                         </div>
                     </Col>
                 </Row>
-
-
             </div>
         );
     }

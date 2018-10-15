@@ -5,6 +5,7 @@ getAreaAndCode,
 sendPhoneCaptcha,
 register} from '../../api/service'
 import './register.css'
+import {Link} from 'react-router-dom'
 import { Form, Input,   Select, Row, Col, Checkbox, Button,  Radio, message} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -91,8 +92,8 @@ class Register extends Component {
             form.validateFields(['confirm'], { force: true });
         }else if(value && !reg.test(value)){
             callback('密码格式不正确！')
-        }else if(value && value === form.getFieldValue('userName')){
-            callback('密码不能与用户名一致')
+        }else if(value && form.getFieldValue('userName')){
+            callback('密码不能与用户名')
         }
         callback();
     }
@@ -239,146 +240,166 @@ class Register extends Component {
 
 
         return (
-            <div className="regis-block">
-                <Form onSubmit={this.submitRegisterInfo}>
-                    <FormItem{...formItemLayout} label="用户类型">
-                        {getFieldDecorator('userType', {
-                            initialValue: 1,
-                            rules: [ {
-                                required: true, message: '请选择用户类型！',
-                            }],
-                        })(
-                            <RadioGroup onChange={this.radioChange} >
-                                <Radio value={1}>采购商</Radio>
-                                <Radio value={2}>供应商</Radio>
-                            </RadioGroup>
-                        )}
-                    </FormItem>
-                    <FormItem{...formItemLayout} label="用户名">
-                        {getFieldDecorator('userName', {
-                            rules: [ {
-                                required: true, message: '用户名不能为空！',
-                            }, {
-                                validator: this.validUserName,
-                            }],
-                            validateTrigger: 'onBlur'
-                        })(
-                            <div>
-                                <Input />
-                                {this.state.validUserName ? <p>账号由字母开头，6-20位字母与数字组成，注册之后不能修改</p> : null}
-                            </div>
-                        )}
-                    </FormItem>
-                    <FormItem{...formItemLayout} label="E-mail">
-                        {getFieldDecorator('email', {
-                            rules: [{
-                                type: 'email', message: 'The input is not valid E-mail!',
-                            }, {
-                                required: true, message: 'Please input your E-mail!',
-                            }],
-                        })(
-                            <Input />
-                        )}
-                    </FormItem>
+            <div>
+                <div className="head-er">
+                    <Row>
+                        <Col span={18}>
+                            <p className="title">欢迎注册</p>
+                        </Col>
 
-                    <FormItem{...formItemLayout} label="国家">
-                        {getFieldDecorator('regCountry', {
-                            // initialValue: '中国',
-                            rules: [ {
-                                required: true, message: '请选择国家',
-                            }],
-                        })(
-                            <Select
-                                showSearch
-                                placeholder="选择国家"
-                                optionFilterProp="children"
-                                onChange={this.selectChange}
-                                onFocus={this.selectFocus}
-                                onBlur={this.selectBlur}
-                                notFoundContent="没有找到对应国家"
-                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                            >
-                                {this.state.countryData.map((coun,i) => {
-                                    return <Option value={coun.id} key={i}>{coun.nameCh}</Option>
-                                })}
-                            </Select>
-                        )}
-                    </FormItem>
-                    <FormItem{...formItemLayout} label="Phone Number">
-                        {getFieldDecorator('mobilePhone', {
-                            rules: [{ required: true, message: 'Please input your phone number!' },
-                                {
-                                    validator: this.validatePhone,
+                        <Col span={6}>
+                            <div className="login-block">
+                            <span>
+                                已有账号，请
+                                <Link to="/Login">
+                                    登录
+                                </Link>
+                            </span>
+                                {/*<span>1</span>*/}
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
+                <div className="regis-block">
+                    <Form onSubmit={this.submitRegisterInfo}>
+                        <FormItem{...formItemLayout} label="用户类型">
+                            {getFieldDecorator('userType', {
+                                initialValue: 1,
+                                rules: [ {
+                                    required: true, message: '请选择用户类型！',
                                 }],
-                            validateTrigger: 'onBlur'
-                        })(
-                            <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-                        )}
-                    </FormItem>
-                    <FormItem{...formItemLayout} label="验证码" extra="We must make sure that your are a human.">
-                        <Row gutter={8}>
-                            <Col span={16}>
-                                {getFieldDecorator('captcha', {
-                                    rules: [{ required: true, message: 'Please input the captcha you got!' }],
-                                })(
-                                    <Input maxLength="6"/>
-                                )}
-                            </Col>
-                            <Col span={8}>
-                                {this.state.canSend ? <div className="sendCode-btn" onClick={this.sendCapt}>
-                                    <span>{this.state.sendText}</span>
-                                </div> : <div className="nosendCode-btn">
-                                    <span>{this.state.count}s后重新发送</span>
+                            })(
+                                <RadioGroup onChange={this.radioChange} >
+                                    <Radio value={1}>采购商</Radio>
+                                    <Radio value={2}>供应商</Radio>
+                                </RadioGroup>
+                            )}
+                        </FormItem>
+                        <FormItem{...formItemLayout} label="用户名">
+                            {getFieldDecorator('userName', {
+                                rules: [ {
+                                    required: true, message: '用户名不能为空！',
+                                }, {
+                                    validator: this.validUserName,
+                                }],
+                                validateTrigger: 'onBlur'
+                            })(
+                                <div>
+                                    <Input />
+                                    {this.state.validUserName ? <p>账号由字母开头，6-20位字母与数字组成，注册之后不能修改</p> : null}
                                 </div>
-                                }
+                            )}
+                        </FormItem>
+                        <FormItem{...formItemLayout} label="E-mail">
+                            {getFieldDecorator('email', {
+                                rules: [{
+                                    type: 'email', message: 'The input is not valid E-mail!',
+                                }, {
+                                    required: true, message: 'Please input your E-mail!',
+                                }],
+                            })(
+                                <Input />
+                            )}
+                        </FormItem>
 
-                            </Col>
-                        </Row>
-                    </FormItem>
+                        <FormItem{...formItemLayout} label="国家">
+                            {getFieldDecorator('regCountry', {
+                                // initialValue: '中国',
+                                rules: [ {
+                                    required: true, message: '请选择国家',
+                                }],
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="选择国家"
+                                    optionFilterProp="children"
+                                    onChange={this.selectChange}
+                                    onFocus={this.selectFocus}
+                                    onBlur={this.selectBlur}
+                                    notFoundContent="没有找到对应国家"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    {this.state.countryData.map((coun,i) => {
+                                        return <Option value={coun.id} key={i}>{coun.nameCh}</Option>
+                                    })}
+                                </Select>
+                            )}
+                        </FormItem>
+                        <FormItem{...formItemLayout} label="Phone Number">
+                            {getFieldDecorator('mobilePhone', {
+                                rules: [{ required: true, message: 'Please input your phone number!' },
+                                    {
+                                        validator: this.validatePhone,
+                                    }],
+                                validateTrigger: 'onBlur'
+                            })(
+                                <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+                            )}
+                        </FormItem>
+                        <FormItem{...formItemLayout} label="验证码" extra="We must make sure that your are a human.">
+                            <Row gutter={8}>
+                                <Col span={16}>
+                                    {getFieldDecorator('captcha', {
+                                        rules: [{ required: true, message: 'Please input the captcha you got!' }],
+                                    })(
+                                        <Input maxLength="6"/>
+                                    )}
+                                </Col>
+                                <Col span={8}>
+                                    {this.state.canSend ? <div className="sendCode-btn" onClick={this.sendCapt}>
+                                        <span>{this.state.sendText}</span>
+                                    </div> : <div className="nosendCode-btn">
+                                        <span>{this.state.count}s后重新发送</span>
+                                    </div>
+                                    }
 
-                    <FormItem{...formItemLayout} label="Password">
-                        {getFieldDecorator('passWord', {
-                            rules: [{
-                                required: true, message: 'Please input your password!',
-                            }, {
-                                validator: this.validateToNextPassword,
-                            }],
-                            validateTrigger: 'onBlur'
-                        })(
-                            <div>
-                                <Input onFocus={this.passChange} type="password" />
-                                {this.state.validPassTip ? <p>6-20位密码，只能使用数字、字母、英文标点符号,数字、字母及英文标点必须包含两种，不能与用户名相同</p> : null}
-                            </div>
+                                </Col>
+                            </Row>
+                        </FormItem>
 
-                        )}
-                    </FormItem>
-                    <FormItem{...formItemLayout} label="Confirm Password">
-                        {getFieldDecorator('confirm', {
-                            rules: [{
-                                required: true, message: 'Please confirm your password!',
-                            }, {
-                                validator: this.compareToFirstPassword,
-                            }],
-                        })(
-                            <Input type="password" onBlur={this.handleConfirmBlur} />
-                        )}
-                    </FormItem>
-                    <FormItem {...tailFormItemLayout}>
-                        {getFieldDecorator('agree', {
-                            // valuePropName: 'checked',
-                            rules: [{
-                                required: true, message: '请先勾选同意协议！'
-                            }]
-                        })(
-                            <Checkbox>I have read the <a href="">agreement</a></Checkbox>
-                        )}
-                    </FormItem>
-                    <FormItem {...tailFormItemLayout}>
-                        <Button type="primary" htmlType="submit">Register</Button>
-                    </FormItem>
-                </Form>
+                        <FormItem{...formItemLayout} label="Password">
+                            {getFieldDecorator('passWord', {
+                                rules: [{
+                                    required: true, message: 'Please input your password!',
+                                }, {
+                                    validator: this.validateToNextPassword,
+                                }],
+                                validateTrigger: 'onBlur'
+                            })(
+                                <div>
+                                    <Input onFocus={this.passChange} type="password" />
+                                    {this.state.validPassTip ? <p>6-20位密码，只能使用数字、字母、英文标点符号,数字、字母及英文标点必须包含两种，不能与用户名相同</p> : null}
+                                </div>
+
+                            )}
+                        </FormItem>
+                        <FormItem{...formItemLayout} label="Confirm Password">
+                            {getFieldDecorator('confirm', {
+                                rules: [{
+                                    required: true, message: 'Please confirm your password!',
+                                }, {
+                                    validator: this.compareToFirstPassword,
+                                }],
+                            })(
+                                <Input type="password" onBlur={this.handleConfirmBlur} />
+                            )}
+                        </FormItem>
+                        <FormItem {...tailFormItemLayout}>
+                            {getFieldDecorator('agree', {
+                                // valuePropName: 'checked',
+                                rules: [{
+                                    required: true, message: '请先勾选同意协议！'
+                                }]
+                            })(
+                                <Checkbox>I have read the <a href="">agreement</a></Checkbox>
+                            )}
+                        </FormItem>
+                        <FormItem {...tailFormItemLayout}>
+                            <Button type="primary" htmlType="submit">Register</Button>
+                        </FormItem>
+                    </Form>
+                </div>
             </div>
-
         );
     }
 }

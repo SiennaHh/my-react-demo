@@ -1,5 +1,8 @@
 .loginContainer{
     background-color: #f2f2f2;
+    /*padding: 200px 0;*/
+}
+.loginContainer .loForm-con{
     padding: 200px 0;
 }
 .login-form {
@@ -9,11 +12,21 @@
     padding: 15px;
 }
 .login-form-forgot {
-    float: right;
+    float: left;
 }
 .login-form-button {
     width: 100%;
 }
 .login-form .ant-form-item-label{
     text-align: left;
+}
+.login-form .err-block{
+    max-width: 300px;
+    border: 1px solid #f5222d;
+    padding: 5px 0;
+    text-align: center;
+    color: #f5222d;
+}
+.login-form .login-join{
+    float: right;
 }
