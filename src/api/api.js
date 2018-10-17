@@ -11,13 +11,14 @@ import router from "../router/Routers";
 let baseURL = '/api';
 // let loadingInstance; //loading
 if (process.env.NODE_ENV === 'development') { // 开发环境api接口
-    baseURL = 'http://192.168.20.200:7070/'
+    baseURL = 'http://192.168.20.200:7070'
 } else if (process.env.NODE_ENV === 'test') { // 测试环境api接口
     baseURL = 'http://apitest.ca-b2b.cn:7070'
 } else { // 线上环境api接口
     baseURL = 'http://api.ca-b2b.cn'
 }
 axios.defaults.baseURL = baseURL;
+
 // axios.defaults.headers.common['Authorization'] = 'q-sign-algorithm=sha1&q-ak=AKIDxobFiz14uY4Paa42TkqxvjMo9LMDMOis&q-sign-time=1531115043;1531115223&q-key-time=1531115043;1531115223&q-header-list=host&q-url-param-list=&q-signature=04e5f6ff7af424b120f889a05cd3cb13b5dcb8a1' //process.env.API_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
 // axios.defaults.headers.get['X-AUTH-USERID'] = 9

@@ -2,9 +2,12 @@
  * Created by Administrator on 2018/4/12.
  */
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
+import PropTypes from 'prop-types';
+import {getInfo} from '../../Action/newAction'
 import './login.css'
 import md5 from 'js-md5'
-import {reactLogin} from '../../api/service'
+import {reactLogin,getCurrentUser} from '../../api/service'
 // import * as LoginActions from '../../Action/loginAction'
 import {Link} from 'react-router-dom'
 import Footer from './../../components/footer/footer'
@@ -13,10 +16,14 @@ const FormItem = Form.Item;
 
 
 class login extends Component {
+    static propTypes = {
+        getInfo: PropTypes.func.isRequired,
+    }
     constructor() {
         super()
         this.state = {
             errText: '',
+            userInfo: ''
         }
     }
     handleSubmit = (e) => {
@@ -31,8 +38,18 @@ class login extends Component {
                 }
                 reactLogin(loginParam).then(res => {
                     if(res.code === "0"){
-                        // message.success("登录成功")
-                        this.props.history.push('/ProductList')
+                        // this.props.getInfo(res.data)
+                        // var storage = window.localStorage;
+                        // storage.setItem("userInfo",JSON.stringify(res.data))
+                        // this.props.history.push('/ProductList')
+                        getCurrentUser().then(res => {
+                            if(res.code === "0"){
+                                this.props.getInfo(res.data)
+                                var storage = window.localStorage;
+                                storage.setItem("userInfo",JSON.stringify(res.data))
+                                this.props.history.push('/ProductList')
+                            }
+                        })
                     }else {
                         this.setState({
                             errText: res.msg
@@ -104,4 +121,11 @@ class login extends Component {
     }
 }
 const Login = Form.create()(login);
-export default Login;
+// export default Login;
+
+
+export default connect(state => ({
+    userInfo: state.update
+}), {
+    getInfo
+})(Login);

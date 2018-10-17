@@ -30,3 +30,8 @@ export const sendPhoneCaptcha = (params) => axios.post(`${CUP}/source-open/sendP
  */
 
 export const getAreaAndCode = (params) => axios.get(`ca-config-provider/config/source-open/getAreaAndCode`, params)
+/**
+ * 获取登录用户
+
+ */
+export const getCurrentUser = (params) => axios.get(`${CUP}/getCurrentUser`, params)
